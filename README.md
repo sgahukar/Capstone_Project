@@ -129,8 +129,10 @@ Both systems were tested for robustness, user experience, and command flexibilit
 
 ## 👨‍💻 Contributors
 
-**Purva Baghel    ** 
-**Soham Shrawankar    **
+**Purva Baghel** 
+****
+**Soham Shrawankar**
+****
 **Suhani Gahukar**
   
 **Symbiosis Institute of Tehnology**
