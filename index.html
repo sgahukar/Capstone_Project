@@ -1,0 +1,1281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Voice Assistant</title>
+    <style>
+        :root {
+            --primary-color: #4285f4;
+            --secondary-color: #34a853;
+            --accent-color: #ea4335;
+            --background-color: #f8f9fa;
+            --card-color: #ffffff;
+            --text-color: #202124;
+            --text-secondary: #5f6368;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --background-color: #202124;
+                --card-color: #303134;
+                --text-color: #e8eaed;
+                --text-secondary: #9aa0a6;
+                --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: var(--transition);
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo-icon {
+            width: 30px;
+            height: 30px;
+        }
+
+        nav {
+            display: flex;
+            gap: 1rem;
+        }
+
+        nav button {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: var(--transition);
+        }
+
+        nav button:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        main {
+            flex: 1;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .assistant-container {
+            background-color: var(--card-color);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .assistant-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .assistant-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #ccc;
+        }
+
+        .status-dot.active {
+            background-color: var(--secondary-color);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .assistant-output {
+            background-color: rgba(0, 0, 0, 0.05);
+            border-radius: 8px;
+            padding: 1.5rem;
+            min-height: 200px;
+            max-height: 300px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .message {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .message.system {
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        .message.user {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .message.assistant {
+            color: var(--text-color);
+        }
+
+        .message.error {
+            color: var(--accent-color);
+        }
+
+        .message.success {
+            color: var(--secondary-color);
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #3367d6;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: rgba(66, 133, 244, 0.1);
+        }
+
+        .mic-icon {
+            width: 20px;
+            height: 20px;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .command-history {
+            background-color: var(--card-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+        }
+
+        .history-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .history-list {
+            list-style: none;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .history-item:hover {
+            color: var(--primary-color);
+        }
+
+        .quick-commands {
+            background-color: var(--card-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+        }
+
+        .commands-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .commands-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+        }
+
+        .command-chip {
+            background-color: rgba(66, 133, 244, 0.1);
+            color: var(--primary-color);
+            padding: 0.5rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .command-chip:hover {
+            background-color: rgba(66, 133, 244, 0.2);
+        }
+
+        .settings-panel {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100vh;
+            background-color: var(--card-color);
+            box-shadow: var(--shadow);
+            padding: 2rem;
+            transition: var(--transition);
+            z-index: 100;
+            overflow-y: auto;
+        }
+
+        .settings-panel.open {
+            right: 0;
+        }
+
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .settings-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .close-settings {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+        }
+
+        .settings-section {
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        .setting-item {
+            margin-bottom: 1rem;
+        }
+
+        .setting-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .setting-control {
+            width: 100%;
+            padding: 0.5rem;
+            border-radius: 4px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--primary-color);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 99;
+            opacity: 0;
+            pointer-events: none;
+            transition: var(--transition);
+        }
+
+        .overlay.open {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .camera-feed {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 101;
+            background-color: black;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            display: none;
+        }
+
+        .camera-controls {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 1rem;
+        }
+
+        .camera-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .camera-btn:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .camera-btn.close {
+            background-color: var(--accent-color);
+        }
+
+        .terminal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            max-width: 800px;
+            height: 60%;
+            background-color: var(--card-color);
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            z-index: 101;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .terminal-header {
+            background-color: #333;
+            color: white;
+            padding: 0.5rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .terminal-title {
+            font-size: 0.9rem;
+        }
+
+        .terminal-close {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+        }
+
+        .terminal-body {
+            flex: 1;
+            background-color: #1e1e1e;
+            color: #f0f0f0;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+
+        .terminal-input {
+            display: flex;
+            background-color: #1e1e1e;
+            padding: 0.5rem;
+            border-top: 1px solid #333;
+        }
+
+        .terminal-prompt {
+            color: #4caf50;
+            margin-right: 0.5rem;
+        }
+
+        .terminal-cmd {
+            background: transparent;
+            border: none;
+            color: #f0f0f0;
+            font-family: 'Courier New', monospace;
+            flex: 1;
+            outline: none;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--card-color);
+            color: var(--text-color);
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            z-index: 1000;
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+
+        @media (max-width: 600px) {
+            .settings-panel {
+                width: 100%;
+                right: -100%;
+            }
+            
+            .terminal {
+                width: 95%;
+                height: 70%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <svg class="logo-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20Z" fill="white"/>
+                <path d="M12 6C8.69 6 6 8.69 6 12C6 15.31 8.69 18 12 18C15.31 18 18 15.31 18 12C18 8.69 15.31 6 12 6ZM12 16C9.79 16 8 14.21 8 12C8 9.79 9.79 8 12 8C14.21 8 16 9.79 16 12C16 14.21 14.21 16 12 16Z" fill="white"/>
+                <path d="M12 10C10.9 10 10 10.9 10 12C10 13.1 10.9 14 12 14C13.1 14 14 13.1 14 12C14 10.9 13.1 10 12 10Z" fill="white"/>
+            </svg>
+            <span>Voice Assistant</span>
+        </div>
+        <nav>
+            <button id="settingsBtn">Settings</button>
+            <button id="helpBtn">Help</button>
+        </nav>
+    </header>
+
+    <main>
+        <div class="dashboard">
+            <div class="assistant-container">
+                <div class="assistant-header">
+                    <h2 class="assistant-title">Voice Command</h2>
+                    <div class="status-indicator">
+                        <div class="status-dot" id="statusDot"></div>
+                        <span id="statusText">Ready</span>
+                    </div>
+                </div>
+                <div class="assistant-output" id="assistantOutput">
+                    <div class="message system">Say "Hey Assistant" followed by your command, or click the microphone button</div>
+                </div>
+                <div class="controls">
+                    <button class="btn btn-primary" id="startListeningBtn">
+                        <svg class="mic-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 14C13.66 14 15 12.66 15 11V5C15 3.34 13.66 2 12 2C10.34 2 9 3.34 9 5V11C9 12.66 10.34 14 12 14Z" fill="white"/>
+                            <path d="M17 11C17 14.31 14.31 17 11 17C7.69 17 5 14.31 5 11H3C3 15.42 6.58 19 11 19C15.42 19 19 15.42 19 11H17Z" fill="white"/>
+                        </svg>
+                        Start Listening
+                    </button>
+                    <button class="btn btn-secondary" id="stopListeningBtn" disabled>
+                        Stop Listening
+                    </button>
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <div class="command-history">
+                    <h3 class="history-title">Command History</h3>
+                    <ul class="history-list" id="historyList">
+                        <!-- History items will be added here -->
+                    </ul>
+                </div>
+                <div class="quick-commands">
+                    <h3 class="commands-title">Quick Commands</h3>
+                    <div class="commands-list">
+                        <div class="command-chip" data-command="open youtube">Open YouTube</div>
+                        <div class="command-chip" data-command="open gmail">Open Gmail</div>
+                        <div class="command-chip" data-command="open camera">Open Camera</div>
+                        <div class="command-chip" data-command="open command prompt">Open Terminal</div>
+                        <div class="command-chip" data-command="open calculator">Calculator</div>
+                        <div class="command-chip" data-command="open notepad">Notepad</div>
+                        <div class="command-chip" data-command="open google">Google Search</div>
+                        <div class="command-chip" data-command="open maps">Open Maps</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="settings-panel" id="settingsPanel">
+        <div class="settings-header">
+            <h2 class="settings-title">Settings</h2>
+            <button class="close-settings" id="closeSettingsBtn">&times;</button>
+        </div>
+        
+        <div class="settings-section">
+            <h3 class="section-title">Voice Recognition</h3>
+            <div class="setting-item">
+                <label class="setting-label">Language</label>
+                <select class="setting-control" id="languageSelect">
+                    <option value="en-US">English (US)</option>
+                    <option value="en-GB">English (UK)</option>
+                    <option value="es-ES">Spanish</option>
+                    <option value="fr-FR">French</option>
+                    <option value="de-DE">German</option>
+                </select>
+            </div>
+            <div class="setting-item">
+                <label class="setting-label">Wake Word</label>
+                <input type="text" class="setting-control" id="wakeWordInput" value="hey assistant">
+            </div>
+        </div>
+        
+        <div class="settings-section">
+            <h3 class="section-title">Appearance</h3>
+            <div class="setting-item">
+                <label class="setting-label">Dark Mode</label>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="darkModeToggle">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+        
+        <div class="settings-section">
+            <h3 class="section-title">Permissions</h3>
+            <div class="setting-item">
+                <label class="setting-label">Allow Camera Access</label>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="cameraAccessToggle" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="setting-item">
+                <label class="setting-label">Allow Microphone Access</label>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="micAccessToggle" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <div class="overlay" id="overlay"></div>
+
+    <div class="camera-feed" id="cameraFeed">
+        <video id="cameraVideo" autoplay playsinline></video>
+        <div class="camera-controls">
+            <button class="camera-btn" id="takePhotoBtn">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="white">
+                    <circle cx="12" cy="12" r="10"/>
+                </svg>
+            </button>
+            <button class="camera-btn close" id="closeCameraBtn">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="white">
+                    <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <div class="terminal" id="terminal">
+        <div class="terminal-header">
+            <div class="terminal-title">Command Prompt</div>
+            <button class="terminal-close" id="closeTerminalBtn">&times;</button>
+        </div>
+        <div class="terminal-body" id="terminalOutput">
+            Microsoft Windows [Version 10.0.19042.985]
+            (c) Microsoft Corporation. All rights reserved.
+            
+            C:\Users\User&gt;
+        </div>
+        <div class="terminal-input">
+            <span class="terminal-prompt">C:\Users\User&gt;</span>
+            <input type="text" class="terminal-cmd" id="terminalInput">
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const startListeningBtn = document.getElementById('startListeningBtn');
+            const stopListeningBtn = document.getElementById('stopListeningBtn');
+            const assistantOutput = document.getElementById('assistantOutput');
+            const statusDot = document.getElementById('statusDot');
+            const statusText = document.getElementById('statusText');
+            const historyList = document.getElementById('historyList');
+            const settingsBtn = document.getElementById('settingsBtn');
+            const closeSettingsBtn = document.getElementById('closeSettingsBtn');
+            const settingsPanel = document.getElementById('settingsPanel');
+            const overlay = document.getElementById('overlay');
+            const cameraFeed = document.getElementById('cameraFeed');
+            const cameraVideo = document.getElementById('cameraVideo');
+            const takePhotoBtn = document.getElementById('takePhotoBtn');
+            const closeCameraBtn = document.getElementById('closeCameraBtn');
+            const terminal = document.getElementById('terminal');
+            const terminalOutput = document.getElementById('terminalOutput');
+            const terminalInput = document.getElementById('terminalInput');
+            const closeTerminalBtn = document.getElementById('closeTerminalBtn');
+            const toast = document.getElementById('toast');
+            const commandChips = document.querySelectorAll('.command-chip');
+            const languageSelect = document.getElementById('languageSelect');
+            const wakeWordInput = document.getElementById('wakeWordInput');
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            const cameraAccessToggle = document.getElementById('cameraAccessToggle');
+            const micAccessToggle = document.getElementById('micAccessToggle');
+
+            // State variables
+            let recognition;
+            let isListening = false;
+            let wakeWord = 'hey assistant';
+            let commandHistory = [];
+            let cameraStream = null;
+            let terminalProcess = null;
+
+            // Initialize the app
+            init();
+
+            function init() {
+                // Check for browser support
+                if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                    showMessage('Your browser doesn\'t support speech recognition. Try Chrome or Edge.', 'error');
+                    startListeningBtn.disabled = true;
+                    return;
+                }
+
+                // Load settings from localStorage
+                loadSettings();
+
+                // Initialize speech recognition
+                initSpeechRecognition();
+
+                // Event listeners
+                startListeningBtn.addEventListener('click', startListening);
+                stopListeningBtn.addEventListener('click', stopListening);
+                settingsBtn.addEventListener('click', openSettings);
+                closeSettingsBtn.addEventListener('click', closeSettings);
+                overlay.addEventListener('click', closeSettings);
+                closeCameraBtn.addEventListener('click', closeCamera);
+                takePhotoBtn.addEventListener('click', takePhoto);
+                closeTerminalBtn.addEventListener('click', closeTerminal);
+                terminalInput.addEventListener('keypress', handleTerminalInput);
+                
+                // Quick command chips
+                commandChips.forEach(chip => {
+                    chip.addEventListener('click', function() {
+                        const command = this.getAttribute('data-command');
+                        processCommand(command);
+                    });
+                });
+
+                // Settings controls
+                languageSelect.addEventListener('change', saveSettings);
+                wakeWordInput.addEventListener('change', saveSettings);
+                darkModeToggle.addEventListener('change', toggleDarkMode);
+                cameraAccessToggle.addEventListener('change', saveSettings);
+                micAccessToggle.addEventListener('change', saveSettings);
+
+                // Show welcome message
+                showMessage('Voice Assistant is ready. Say "' + wakeWord + '" followed by your command.', 'system');
+            }
+
+            function initSpeechRecognition() {
+                recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+                recognition.continuous = true;
+                recognition.interimResults = true;
+                recognition.lang = languageSelect.value;
+
+                recognition.onstart = function() {
+                    isListening = true;
+                    statusDot.classList.add('active');
+                    statusText.textContent = 'Listening...';
+                    startListeningBtn.disabled = true;
+                    stopListeningBtn.disabled = false;
+                };
+
+                recognition.onend = function() {
+                    if (isListening) {
+                        recognition.start(); // Restart recognition if still listening
+                    }
+                };
+
+                recognition.onerror = function(event) {
+                    showMessage('Error: ' + event.error, 'error');
+                    stopListening();
+                };
+
+                recognition.onresult = function(event) {
+                    let interimTranscript = '';
+                    let finalTranscript = '';
+
+                    for (let i = event.resultIndex; i < event.results.length; i++) {
+                        const transcript = event.results[i][0].transcript;
+                        if (event.results[i].isFinal) {
+                            finalTranscript += transcript;
+                        } else {
+                            interimTranscript += transcript;
+                        }
+                    }
+
+                    // Process the final transcript
+                    if (finalTranscript) {
+                        processTranscript(finalTranscript);
+                    }
+                };
+            }
+
+            function startListening() {
+                if (!micAccessToggle.checked) {
+                    showMessage('Microphone access is disabled in settings', 'error');
+                    return;
+                }
+
+                try {
+                    recognition.start();
+                    showMessage('Listening for commands...', 'system');
+                } catch (error) {
+                    showMessage('Error starting speech recognition: ' + error.message, 'error');
+                }
+            }
+
+            function stopListening() {
+                isListening = false;
+                recognition.stop();
+                statusDot.classList.remove('active');
+                statusText.textContent = 'Ready';
+                startListeningBtn.disabled = false;
+                stopListeningBtn.disabled = true;
+                showMessage('Stopped listening', 'system');
+            }
+
+            function processTranscript(transcript) {
+                transcript = transcript.trim().toLowerCase();
+                showMessage(transcript, 'user');
+                addToHistory(transcript);
+
+                // Check for wake word
+                if (transcript.startsWith(wakeWord)) {
+                    const command = transcript.slice(wakeWord.length).trim();
+                    processCommand(command);
+                } else if (
+                    transcript.includes('assistant') || 
+                    transcript.includes('open') || 
+                    transcript.includes('start') ||
+                    transcript.includes('launch')
+                ) {
+                    // Try to process even without wake word if it seems like a command
+                    processCommand(transcript);
+                }
+            }
+
+            function processCommand(command) {
+                showMessage('Processing: ' + command, 'system');
+
+                // Normalize the command
+                command = command.toLowerCase().trim();
+
+                // Remove common prefixes
+                const prefixes = ['open', 'start', 'launch', 'run', 'please'];
+                prefixes.forEach(prefix => {
+                    if (command.startsWith(prefix)) {
+                        command = command.slice(prefix.length).trim();
+                    }
+                });
+
+                // Command mapping with fuzzy matching
+                const commands = {
+                    'youtube': () => openURL('https://youtube.com'),
+                    'mail': () => openURL('https://mail.google.com'),
+                    'gmail': () => openURL('https://mail.google.com'),
+                    'email': () => openURL('https://mail.google.com'),
+                    'camera': openCamera,
+                    'webcam': openCamera,
+                    'command prompt': openTerminal,
+                    'terminal': openTerminal,
+                    'cmd': openTerminal,
+                    'calculator': openCalculator,
+                    'calc': openCalculator,
+                    'notepad': openNotepad,
+                    'notes': openNotepad,
+                    'google': () => openURL('https://google.com'),
+                    'search': () => openURL('https://google.com/search?q=' + encodeURIComponent(command.replace('search', '').trim())),
+                    'maps': () => openURL('https://maps.google.com'),
+                    'google maps': () => openURL('https://maps.google.com'),
+                    'calendar': () => openURL('https://calendar.google.com'),
+                    'google calendar': () => openURL('https://calendar.google.com'),
+                    'weather': () => openURL('https://google.com/search?q=weather'),
+                    'time': showTime,
+                    'date': showDate,
+                    'clear': clearOutput,
+                    'help': showHelp
+                };
+
+                // Find the best matching command
+                let bestMatch = null;
+                let bestScore = 0;
+
+                for (const [cmd, action] of Object.entries(commands)) {
+                    const score = stringSimilarity(command, cmd);
+                    if (score > bestScore && score > 0.4) { // Threshold for matching
+                        bestScore = score;
+                        bestMatch = cmd;
+                    }
+                }
+
+                if (bestMatch) {
+                    showMessage('Executing: ' + bestMatch, 'system');
+                    try {
+                        commands[bestMatch]();
+                        showToast('Command executed: ' + bestMatch);
+                    } catch (error) {
+                        showMessage('Error executing command: ' + error.message, 'error');
+                    }
+                } else {
+                    // Try to handle as a search query
+                    if (command.length > 3) {
+                        openURL('https://google.com/search?q=' + encodeURIComponent(command));
+                    } else {
+                        showMessage('Command not recognized. Try saying "help" for available commands.', 'error');
+                    }
+                }
+            }
+
+            function stringSimilarity(str1, str2) {
+                // Simple similarity measure (can be improved with more advanced algorithms)
+                const set1 = new Set(str1.split(' '));
+                const set2 = new Set(str2.split(' '));
+                const intersection = new Set([...set1].filter(x => set2.has(x)));
+                return intersection.size / Math.max(set1.size, set2.size);
+            }
+
+            function openURL(url) {
+                window.open(url, '_blank');
+                showMessage('Opened: ' + url, 'success');
+            }
+
+            function openCamera() {
+                if (!cameraAccessToggle.checked) {
+                    showMessage('Camera access is disabled in settings', 'error');
+                    return;
+                }
+
+                showMessage('Opening camera...', 'system');
+                
+                if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                    navigator.mediaDevices.getUserMedia({ video: true })
+                        .then(function(stream) {
+                            cameraStream = stream;
+                            cameraVideo.srcObject = stream;
+                            cameraFeed.style.display = 'block';
+                            overlay.classList.add('open');
+                        })
+                        .catch(function(error) {
+                            showMessage('Error accessing camera: ' + error.message, 'error');
+                        });
+                } else {
+                    showMessage('Camera access not supported or blocked', 'error');
+                }
+            }
+
+            function closeCamera() {
+                if (cameraStream) {
+                    cameraStream.getTracks().forEach(track => track.stop());
+                    cameraStream = null;
+                }
+                cameraVideo.srcObject = null;
+                cameraFeed.style.display = 'none';
+                overlay.classList.remove('open');
+                showMessage('Camera closed', 'system');
+            }
+
+            function takePhoto() {
+                const canvas = document.createElement('canvas');
+                canvas.width = cameraVideo.videoWidth;
+                canvas.height = cameraVideo.videoHeight;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(cameraVideo, 0, 0, canvas.width, canvas.height);
+                
+                const imageUrl = canvas.toDataURL('image/png');
+                const link = document.createElement('a');
+                link.href = imageUrl;
+                link.download = 'photo-' + new Date().toISOString().slice(0, 10) + '.png';
+                link.click();
+                
+                showToast('Photo saved');
+            }
+
+            function openTerminal() {
+                terminal.style.display = 'flex';
+                overlay.classList.add('open');
+                terminalInput.focus();
+                showMessage('Terminal opened', 'system');
+            }
+
+            function closeTerminal() {
+                terminal.style.display = 'none';
+                overlay.classList.remove('open');
+                showMessage('Terminal closed', 'system');
+            }
+
+            function handleTerminalInput(e) {
+                if (e.key === 'Enter') {
+                    const command = terminalInput.value.trim();
+                    if (command) {
+                        // Add to output
+                        terminalOutput.innerHTML += `<div>C:\\Users\\User&gt; ${command}</div>`;
+                        
+                        // Process command
+                        let output = '';
+                        if (command === 'help') {
+                            output = `Available commands:
+help - Show this help
+clear - Clear the terminal
+date - Show current date
+time - Show current time
+exit - Close the terminal`;
+                        } else if (command === 'clear') {
+                            terminalOutput.innerHTML = 'Microsoft Windows [Version 10.0.19042.985]<br>(c) Microsoft Corporation. All rights reserved.<br><br>C:\\Users\\User&gt; ';
+                            terminalInput.value = '';
+                            return;
+                        } else if (command === 'date') {
+                            output = new Date().toDateString();
+                        } else if (command === 'time') {
+                            output = new Date().toLocaleTimeString();
+                        } else if (command === 'exit') {
+                            closeTerminal();
+                            terminalInput.value = '';
+                            return;
+                        } else {
+                            output = `'${command}' is not recognized as an internal or external command, operable program or batch file.`;
+                        }
+                        
+                        terminalOutput.innerHTML += `<div>${output}</div><br>C:\\Users\\User&gt; `;
+                        terminalInput.value = '';
+                        terminalOutput.scrollTop = terminalOutput.scrollHeight;
+                    }
+                }
+            }
+
+            function openCalculator() {
+                window.open('https://www.google.com/search?q=calculator', '_blank');
+                showMessage('Calculator opened', 'success');
+            }
+
+            function openNotepad() {
+                window.open('https://www.onlinenotepad.io/', '_blank');
+                showMessage('Notepad opened', 'success');
+            }
+
+            function showTime() {
+                const time = new Date().toLocaleTimeString();
+                showMessage('Current time is: ' + time, 'assistant');
+            }
+
+            function showDate() {
+                const date = new Date().toDateString();
+                showMessage('Today is: ' + date, 'assistant');
+            }
+
+            function clearOutput() {
+                assistantOutput.innerHTML = '';
+                showMessage('Output cleared', 'system');
+            }
+
+            function showHelp() {
+                const helpText = `Available commands:
+- Open [YouTube/Gmail/Camera/Calculator/Notepad/Google/Maps/Calendar]
+- Search [query]
+- Time/Date
+- Clear
+- Help`;
+                showMessage(helpText, 'assistant');
+            }
+
+            function showMessage(text, type = 'assistant') {
+                const message = document.createElement('div');
+                message.className = 'message ' + type;
+                message.textContent = text;
+                assistantOutput.appendChild(message);
+                assistantOutput.scrollTop = assistantOutput.scrollHeight;
+            }
+
+            function addToHistory(command) {
+                commandHistory.unshift(command);
+                if (commandHistory.length > 10) {
+                    commandHistory.pop();
+                }
+                updateHistoryList();
+            }
+
+            function updateHistoryList() {
+                historyList.innerHTML = '';
+                commandHistory.forEach((cmd, index) => {
+                    const item = document.createElement('li');
+                    item.className = 'history-item';
+                    item.textContent = cmd;
+                    item.addEventListener('click', function() {
+                        processCommand(cmd);
+                    });
+                    historyList.appendChild(item);
+                });
+            }
+
+            function openSettings() {
+                settingsPanel.classList.add('open');
+                overlay.classList.add('open');
+            }
+
+            function closeSettings() {
+                settingsPanel.classList.remove('open');
+                overlay.classList.remove('open');
+            }
+
+            function loadSettings() {
+                const settings = JSON.parse(localStorage.getItem('voiceAssistantSettings')) || {};
+                
+                if (settings.language) {
+                    languageSelect.value = settings.language;
+                    recognition.lang = settings.language;
+                }
+                
+                if (settings.wakeWord) {
+                    wakeWord = settings.wakeWord;
+                    wakeWordInput.value = settings.wakeWord;
+                }
+                
+                if (settings.darkMode) {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                    darkModeToggle.checked = true;
+                }
+                
+                if (settings.cameraAccess !== undefined) {
+                    cameraAccessToggle.checked = settings.cameraAccess;
+                }
+                
+                if (settings.micAccess !== undefined) {
+                    micAccessToggle.checked = settings.micAccess;
+                }
+            }
+
+            function saveSettings() {
+                const settings = {
+                    language: languageSelect.value,
+                    wakeWord: wakeWordInput.value,
+                    darkMode: darkModeToggle.checked,
+                    cameraAccess: cameraAccessToggle.checked,
+                    micAccess: micAccessToggle.checked
+                };
+                
+                localStorage.setItem('voiceAssistantSettings', JSON.stringify(settings));
+                
+                // Apply settings
+                wakeWord = wakeWordInput.value;
+                recognition.lang = languageSelect.value;
+                
+                showToast('Settings saved');
+            }
+
+            function toggleDarkMode() {
+                if (darkModeToggle.checked) {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                } else {
+                    document.documentElement.removeAttribute('data-theme');
+                }
+                saveSettings();
+            }
+
+            function showToast(message) {
+                toast.textContent = message;
+                toast.classList.add('show');
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 3000);
+            }
+
+            // Check for dark mode preference
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                darkModeToggle.checked = true;
+                toggleDarkMode();
+            }
+        });
+    </script>
+    <script>
+        async function sendMessage() {
+            const userInput = document.getElementById("inputText").value;
+        
+            const response = await fetch("http://127.0.0.1:5000/api/ask", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ query: userInput })
+            });
+        
+            const data = await response.json();
+            document.getElementById("response").innerText = data.response;
+        }
+    </script>
+    <input type="text" id="inputText" placeholder="Say something..." />
+    <button onclick="sendMessage()">Send</button>
+    <p id="response"></p>
+        
+</body>
+</html>
